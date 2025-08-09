@@ -1,0 +1,1 @@
+enum Request { get, post }
