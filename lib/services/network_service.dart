@@ -15,7 +15,7 @@ class NetworkService with ErrorHandling{
     _dio =
         dio ??
         Dio(
-          BaseOptions(baseUrl: "", connectTimeout: const Duration(minutes: 3)),
+          BaseOptions(baseUrl: "https://dog.ceo/api", connectTimeout: const Duration(minutes: 3)),
         );
 
     if (kDebugMode) {

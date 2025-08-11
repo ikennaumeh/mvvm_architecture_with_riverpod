@@ -3,27 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mvvm_riverpod/services/animal_service.dart';
 import 'package:mvvm_riverpod/ui/views/home/home_state.dart';
 
-final homeViewModelProvider = AutoDisposeAsyncNotifierProvider<HomeViewModel, HomeState>(HomeViewModel.new);
+final homeViewModelProvider = StateNotifierProvider.autoDispose<HomeViewModel, HomeState>((ref) => HomeViewModel(ref));
 
-class HomeViewModel extends AutoDisposeAsyncNotifier<HomeState> {
+class HomeViewModel extends StateNotifier<HomeState> {
+  final Ref _ref;
 
-  @override
-  FutureOr<HomeState> build() async {
-    final animalService = ref.read(animalServiceProvider);
-    final list = await animalService.fetchHoundsList();
-
-    return HomeState(houndList: list);
-  }
-
+  HomeViewModel(this._ref) : super(HomeState.initial());
+  
   Future<void> fetchHoundDogs() async {
-    state = AsyncLoading();
+    state = state.copyWith(uiState: UiState.loading);
 
-    state = await AsyncValue.guard(() async {
-      final animalService = ref.read(animalServiceProvider);
-      final list = await animalService.fetchHoundsList();
-
-      return HomeState(houndList: list);
-    });
+    final response = await _ref.read(animalServiceProvider).fetchHoundsList();
+    response.fold(
+            (error){
+              state = state.copyWith(uiState: UiState.error, errorMessage: error.toString());
+            },
+            (data){
+              state = state.copyWith(uiState: UiState.success, houndList: data);
+            },
+    );
   }
-
 }
+
+enum UiState{idle, loading, success, error}

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mvvm_riverpod/core/either.dart';
 import 'package:mvvm_riverpod/services/network_service.dart';
 import 'package:mvvm_riverpod/ui/enums/request.dart';
 
@@ -11,13 +12,16 @@ class AnimalService {
 
   AnimalService({required this.networkService});
 
-  Future<List<String>> fetchHoundsList() async {
+  Future<Either<Exception, List<String>>> fetchHoundsList() async {
 
-    final response = await networkService.request(
+    try{
+      final response = await networkService.request(
         "/breeds/list/all",
         request: Request.get,
-    );
-
-    return List<String>.from(response['message']['hound']);
+      );
+      return Right(List<String>.from(response['message']['hound']));
+    } catch (e){
+      return Left(Exception(e));
+    }
   }
 }

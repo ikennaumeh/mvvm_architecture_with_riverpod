@@ -1,11 +1,20 @@
+import 'package:mvvm_riverpod/ui/views/home/home_view_model.dart';
+
 class HomeState {
+  final UiState uiState;
   final List<String> houndList;
+  final String? errorMessage;
 
-  HomeState({this.houndList = const []});
+  HomeState({required this.uiState, required this.houndList, this.errorMessage});
 
-  HomeState copyWith(List<String>? houndList){
+  HomeState.initial(): this(uiState: UiState.idle, houndList: const [], errorMessage: null);
+
+  HomeState copyWith(
+      {UiState? uiState, List<String>? houndList, String? errorMessage}){
     return HomeState(
-      houndList: houndList ?? this.houndList
+      uiState: uiState ?? this.uiState,
+      houndList: houndList ?? this.houndList,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 }
